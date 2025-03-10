@@ -14,7 +14,7 @@ An Unofficial Python wrapper and CLI tool for the Files.VC API, designed to down
 
 ## Installation
 
-Install the package from PyPI:
+Install the package from [PyPI](https://pypi.org/project/Files-VC/):
 
 ```bash
 python3 -m pip install Files-VC -U
@@ -124,7 +124,7 @@ print(f"File saved at {downloaded_path}")
 > [!TIP]
 > Always verify if the file already exists on the server using the `FilesVC().check_file(file_path}` function before uploading it.
 > This will reduce unwanted bandwidth usage.
-> Check the [\_\_main\_\_.py](https://github.com/Sasivarnasarma/files-vc/blob/main/files_vc/__main__.py#L166-L190) file for reference/ideas.
+> Check the [\_\_main\_\_.py](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/__main__.py#L184-L209) file for reference/ideas.
 
 ## API Reference
 **Each class and function includes a docstring. For more details, refer to it.**
@@ -135,11 +135,15 @@ The core class for interacting with the files.vc API.
 
 #### Methods
 
-- `get_file_info(file_hash: str, ...) -> FileInfo`: Get information about a file. [(Docstring)](https://github.com/Sasivarnasarma/files-vc/blob/main/files_vc/_main.py#L124-L138)
-- `list_files(account_id: str) -> list[FileInfo]`: Retrieve a list of files for an account. [(Docstring)](https://github.com/Sasivarnasarma/files-vc/blob/main/files_vc/_main.py#L160-L171)
-- `check_file(file_path: str, ...) -> FileInfo | None`: Check if a file already exists on the server. [(Docstring)](https://github.com/Sasivarnasarma/files-vc/blob/main/files_vc/_main.py#L189-L204)
-- `download_file(file_hash: str, save_path: str, ...) -> str`: Download a file by hash. [(Docstring)](https://github.com/Sasivarnasarma/files-vc/blob/main/files_vc/_main.py#L312-L330)
-- `upload_file(file_path: str, account_id: str, ...) -> tuple[str, FileInfo]`: Upload a file to the server. [(Docstring)](https://github.com/Sasivarnasarma/files-vc/blob/main/files_vc/_main.py#L228-L251)
+- `get_file_info(file_hash: str, ...) -> FileInfo`: Get information about a file. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L124-L138)
+- `list_files(account_id: str) -> list[FileInfo]`: Retrieve a list of files for an account. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L160-L171)
+- `check_file(file_path: str, ...) -> FileInfo | None`: Check if a file already exists on the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L189-L204)
+- `download_file(file_hash: str, save_path: str, ...) -> str`: Download a file by hash. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L241-L263)
+- `upload_file(file_path: str, account_id: str, ...) -> tuple[str, FileInfo]`: Upload a file to the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L312-L330)
+
+> [!TIP]
+> The `check_file`, `download_file`, and `upload_file` functions include `progress` and `progress_args` parameters, which allow you to customize the progress.
+> Check the [\_\_main\_\_.py](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/__main__.py) file for reference/ideas.
 
 ### `FileInfo`
 
@@ -162,6 +166,11 @@ Represents metadata for a file.
 - And other exceptions from the requests library.
 
 ---
+
+## TODO
+
+- [ ] **Creating tests** – Unit and integration tests for core functions.
+- [ ] **Creating documentation** – Generate API documentation for better developer experience.
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request with your improvements.

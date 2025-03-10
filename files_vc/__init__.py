@@ -13,7 +13,7 @@ __title__ = "FilesVC"
 __author__ = "Sasivarnasarma"
 __author_email__ = "sasivarnasarma@protonmail"
 __license__ = "MIT"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __all__ = (
     "__version__",
     "FilesVC",

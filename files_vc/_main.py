@@ -21,7 +21,7 @@ import hashlib
 from pathlib import Path
 from typing import Dict, List, Union, Callable, Optional, Tuple
 from requests.exceptions import HTTPError
-from requests import get as req_get, post as req_post
+from requests import get as req_get, post as req_post, delete as req_delete
 from requests_toolbelt import MultipartEncoderMonitor
 
 from files_vc.types import FileInfo, FilesVCException
@@ -80,8 +80,6 @@ class FilesVC:
             "Accept-Language": "en-US,en;q=0.9",
             "Connection": "keep-alive",
         }
-        if self.account_id:
-            self.headers["X-Account-ID"] = self.account_id
 
     def _make_file_info(self, data: Dict) -> FileInfo:
         """Internal method to create FileInfo object from API response data.
@@ -179,6 +177,65 @@ class FilesVC:
         files_data = response.json()
 
         return [self._make_file_info(file_info) for file_info in files_data["files"]]
+
+    def delete_file(
+        self,
+        file_hash: Optional[str] = None,
+        file_url: Optional[str] = None,
+        account_id: Optional[str] = None,
+    ) -> str:
+        """Delete a file by hash or URL.
+
+        Either `file_url` or `file_hash` must be provided, but not both.
+        If neither is provided or if both are provided, a `FilesVCException` will be raised.
+
+        :param file_hash: Hash of the file to be deleted.
+        :type file_hash: Optional[str]
+        :param file_url: URL of the file to be deleted.
+        :type file_url: Optional[str]
+        :param account_id: Account ID to associate the deletion with.
+        :type account_id: Optional[str]
+        :return: Success message if the file was deleted.
+        :rtype: str
+        :raises FilesVCException: If the account ID is not specified,
+            if neither `file_url` nor `file_hash` is provided,
+            if both are provided, if `file_url` is not a valid URL,
+            or If the file is not found.
+        :raises HTTPError: If an error occurs during the HTTP request.
+        """
+        if not (file_url or file_hash):
+            raise FilesVCException("Error: Either file_url or file_hash is required.")
+        if file_url and file_hash:
+            raise FilesVCException(
+                "Error: Only one of file_url or file_hash can be provided, not both."
+            )
+
+        if not file_hash:
+            match = re.search(r"\b[a-f0-9]{32}\b", file_url)
+            if match:
+                file_hash = match.group(0)
+            else:
+                raise FilesVCException("Error: Unable to extract file hash from URL.")
+
+        account_id = account_id or self.account_id
+        if not account_id:
+            raise FilesVCException("Error: Account ID is required.")
+        headers = self.headers.copy()
+        headers.update({"X-Account-ID": account_id})
+
+        url = f"{self.api_url}/api/file/delete?hash={file_hash}"
+        response = req_delete(url, headers=headers, timeout=30)
+        if response.status_code == 200:
+            response = response.json()
+            if response["success"]:
+                return response["message"]
+            raise FilesVCException(f"Error: {response['message']}")
+        if response.status_code == 404:
+            raise FilesVCException(
+                "Error: The file is not linked to the given Account ID or not found on the server."
+            )
+        response.raise_for_status()
+        return None
 
     def check_file(
         self,

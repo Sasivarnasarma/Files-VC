@@ -89,6 +89,22 @@ def main():
         "account_id", type=str, help="Account ID", metavar="AccountID"
     )
 
+    delete_parser = subparsers.add_parser(
+        "delete", help="Delete a file from the server"
+    )
+    delete_parser.add_argument(
+        "file", type=str, help="MD5 Hash of the file OR File URL", metavar="File"
+    )
+    delete_parser.add_argument(
+        "-a",
+        "--account_id",
+        type=str,
+        required=True,
+        help="Account ID (Required)",
+        metavar="",
+        dest="account_id",
+    )
+
     check_parser = subparsers.add_parser(
         "check", help="Check if the file already exists on the server"
     )
@@ -144,6 +160,21 @@ def main():
             file_infos = files_vc.list_files(account_id=args.account_id)
             for file_info in file_infos:
                 print(create_table(file_info, tablefmt=tablefmt), end="\n\n")
+        except (HTTPError, FilesVCException) as e:
+            print(e, end="\n\n")
+
+    elif args.command == "delete":
+        print()
+        try:
+            match = re.search(r"\b[a-f0-9]{32}\b", args.file)
+            if match:
+                file_hash = match.group(0)
+                message = files_vc.delete_file(
+                    file_hash=file_hash, account_id=args.account_id
+                )
+                print(f"{message} - Hash: {file_hash}", end="\n\n")
+            else:
+                raise FilesVCException("Error: Unable to get file hash from argument.")
         except (HTTPError, FilesVCException) as e:
             print(e, end="\n\n")
 

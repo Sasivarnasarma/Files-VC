@@ -52,6 +52,8 @@ files-vc <command> <positional_arguments> [options]
     - `-t`/`--tablefmt`: Set File info output format
 - **info**: Get file information by file hash or URL
 - **list**: List all files for a given account ID
+- **delete**: Delete a file from the server
+    - `-a`/`--account_id`: Specify the account ID that belongs to the file. (Required)
 - **check**: Check if a file already exists on the server
 - **download/dl**: Download a file using its hash or URL
     - `-s`/`--save`: Specify the folder path to save the downloaded file
@@ -74,6 +76,8 @@ files-vc --tablefmt grid <command> <args>
 files-vc info <file_hash_or_url>
 # List files for an account
 files-vc list <account_id>
+# Delete a file from the server
+files-vc delete <file_hash_or_url> --account_id <account_id>
 # Check if a file exists on the server
 files-vc check /path/to/file
 # Download a file (with optional save location)
@@ -106,6 +110,10 @@ files = files_vc.list_files(account_id="your_account_id")
 for file in files:
     print(file.name, file.download_url)
 
+# Delete a file
+message = files_vc.delete_file(file_hash="your_file_hash", account_id="your_account_id")
+print(message)
+
 # Check if a file exists
 file_info = files_vc.check_file(file_path="/path/to/file")
 print(file_info)
@@ -135,11 +143,12 @@ The core class for interacting with the files.vc API.
 
 #### Methods
 
-- `get_file_info(file_hash: str, ...) -> FileInfo`: Get information about a file. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L124-L138)
-- `list_files(account_id: str) -> list[FileInfo]`: Retrieve a list of files for an account. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L160-L171)
-- `check_file(file_path: str, ...) -> FileInfo | None`: Check if a file already exists on the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L189-L204)
-- `download_file(file_hash: str, save_path: str, ...) -> str`: Download a file by hash. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L241-L263)
-- `upload_file(file_path: str, account_id: str, ...) -> tuple[str, FileInfo]`: Upload a file to the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L312-L330)
+- `get_file_info(file_hash: str, ...) -> FileInfo`: Get information about a file. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L122-L136)
+- `list_files(account_id: str) -> list[FileInfo]`: Retrieve a list of files for an account. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L158-L169)
+- `delete_file(file_hash: str, account_id: str, ...) -> str`: Delete a file from the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L187-L205)
+- `check_file(file_path: str, ...) -> FileInfo | None`: Check if a file already exists on the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L246-L261)
+- `download_file(file_hash: str, save_path: str, ...) -> str`: Download a file by hash. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L298-L320)
+- `upload_file(file_path: str, account_id: str, ...) -> tuple[str, FileInfo]`: Upload a file to the server. [(Docstring)](https://github.com/Sasivarnasarma/Files-VC/blob/main/files_vc/_main.py#L369-L387)
 
 > [!TIP]
 > The `check_file`, `download_file`, and `upload_file` functions include `progress` and `progress_args` parameters, which allow you to customize the progress.

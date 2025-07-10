@@ -58,10 +58,15 @@ files-vc <command> <positional_arguments> [options]
 - **download/dl**: Download a file using its hash or URL
     - `-s`/`--save`: Specify the folder path to save the downloaded file
 - **upload/ul**: Upload a file to the server
+    - `k`/`--api_key`: Specify API Key for authentication. (Required) [Get API Key](https://files.vc/api)
     - `-a`/`--account_id`: Specify the account ID to upload the file
 
 You can customize table output format using the `-t`/`--tablefmt` option, which supports formats like plain, grid, etc.
 Check out the [Tabulate README](https://github.com/astanin/python-tabulate#table-format) for a list of available formats and more details.
+
+> [!IMPORTANT]  
+> To upload a file, you must provide a valid API token. [Obtain your API key from the Files.VC](https://files.vc/api)
+
 
 **"This option must be used before the command."**
 
@@ -83,7 +88,7 @@ files-vc check /path/to/file
 # Download a file (with optional save location)
 files-vc download <file_hash_or_url> --save /path/to/save/location
 # Upload a file (with optional account ID)
-files-vc upload /path/to/file --account_id <account_id>
+files-vc upload /path/to/file --api_key <api_key> --account_id <account_id>
 ```
 
 > [!NOTE]

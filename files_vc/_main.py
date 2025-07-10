@@ -59,15 +59,21 @@ class FilesVC:
             Uploads a file to the server, with progress tracking support.
     """
 
-    def __init__(self, account_id: str = None):
+    def __init__(self, account_id: str = None, api_key: str = None):
         """Initialize the files_vc object with account ID, API URL, and
         headers.
 
         :param account_id: The account ID to be used for API requests,
             optional.
         :type account_id: str
+        :param api_key: The API key is used for authentication while uploading.
+            This parameter is optional here; however, if it is not provided,
+            it must be included when making the `upload_file` request.
+            To get an API key, see: https://files.vc/api.
+        :type api_key: str
         """
         self.account_id = account_id
+        self.api_key = api_key
         self.api_url = "https://api.files.vc"
         self.headers = {
             "User-Agent": (
@@ -362,6 +368,7 @@ class FilesVC:
     def upload_file(
         self,
         file_path: Union[str, Path],
+        api_key: Optional[str] = None,
         account_id: Optional[str] = None,
         progress: Callable[[int, int, Tuple], None] = None,
         progress_args: Optional[Tuple] = (),
@@ -370,6 +377,11 @@ class FilesVC:
 
         :param file_path: The path to the file to be uploaded.
         :type file_path: Union[str, Path]
+        :param api_key: The API key is used for authentication during
+            uploads. If the API key was not provided during the 
+            `FilesVC()` request, it must be included here.
+            To get an API key, see: https://files.vc/api.
+        :type api_key: str
         :param account_id: The account ID to associate the file with.
         :type account_id: str
         :param progress: Optional callback function to report progress.
@@ -380,13 +392,20 @@ class FilesVC:
         :return: Tuple containing a success message and a FileInfo
             object containing file information.
         :rtype: Tuple[str, FileInfo]
-        :raises FilesVCException: If the file is not found, empty, or
+        :raises FilesVCException: If the api key is not specified or
+            api key is invalid or if the file is not found, empty, or
             exceeds the maximum allowed size.
         :raises TypeError: If progress is not a callable function.
         :raises HTTPError: If an error occurs during the HTTP request.
         """
+        account_id = account_id or self.account_id
+        api_key = api_key or self.api_key
+
         if not isinstance(file_path, Path):
             file_path = Path(file_path)
+        
+        if not api_key:
+            raise FilesVCException("Error: API key is required for uploading files.")
 
         if not file_path.is_file():
             raise FilesVCException("Error: Not a file")
@@ -424,6 +443,7 @@ class FilesVC:
             headers = self.headers.copy()
             if account_id:
                 headers.update({"X-Account-ID": account_id})
+            headers.update({"X-API-Key": api_key})
             headers.update({"Content-Type": encoder_monitor.content_type})
 
             response = req_post(
@@ -432,6 +452,8 @@ class FilesVC:
                 headers=headers,
                 timeout=60 * 5,
             )
+        if response.status_code == 403:
+            raise FilesVCException("Error: Invalid API key")
         response.raise_for_status()
         res_json = response.json()
         message = res_json.get("message")

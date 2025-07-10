@@ -129,6 +129,15 @@ def main():
         "file_path", type=str, help="Path to the file", metavar="FilePath"
     )
     upload_parser.add_argument(
+        "-k",
+        "--api_key",
+        type=str,
+        required=True,
+        help="API Key for authentication",
+        metavar="",
+        dest="api_key"
+    )
+    upload_parser.add_argument(
         "-a", "--account_id", type=str, help="Account ID", metavar="", dest="account_id"
     )
 
@@ -228,6 +237,7 @@ def main():
             else:
                 message, file_info = files_vc.upload_file(
                     file_path=args.file_path,
+                    api_key=args.api_key,
                     account_id=args.account_id,
                     progress=display_progress,
                     progress_args=(time.time(), "Uploading"),

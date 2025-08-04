@@ -1,3 +1,5 @@
+> [!WARNING]
+> # ⚠️ This project is archived due to the shutdown of Files.vc. It will be unarchived if and when the service becomes available again.
 # Files.VC Python Library
 
 An Unofficial Python wrapper and CLI tool for the Files.VC API, designed to download, upload, and manage files efficiently.
